@@ -1,0 +1,56 @@
+from collections import deque
+CAP_A = 4
+CAP_B = 3
+GOAL = 2
+def get_next_states(state):
+    a, b = state
+    states = set()
+    states.add((CAP_A, b))
+    states.add((a, CAP_B))
+    states.add((0, b))
+    states.add((a, 0))
+    pour = min(a, CAP_B - b)
+    states.add((a - pour, b + pour))
+    pour = min(b, CAP_A - a)
+    states.add((a + pour, b - pour))
+    return states
+def bfs():
+    start = (0, 0)
+    queue = deque([(start, [])])
+    visited = set()
+    while queue:
+        state, path = queue.popleft()
+        if state in visited:
+            continue
+        visited.add(state)
+        path = path + [state]
+        if state[0] == GOAL or state[1] == GOAL:
+            return path
+        for next_state in get_next_states(state):
+            if next_state not in visited:
+                queue.append((next_state, path))
+    return None
+def dfs(depth_limit=20):
+    start = (0, 0)
+    stack = [(start, [], 0)]
+    visited = set()
+    while stack:
+        state, path, depth = stack.pop()
+        if state in visited or depth > depth_limit:
+            continue
+        visited.add(state)
+        path = path + [state]
+        if state[0] == GOAL or state[1] == GOAL:
+            return path
+        for next_state in get_next_states(state):
+            stack.append((next_state, path, depth + 1))
+    return None
+if __name__ == "__main__":
+    print("BFS Solution:")
+    bfs_solution = bfs()
+    for step in bfs_solution:
+        print(step)
+    print("\nDFS Solution:")
+    dfs_solution = dfs()
+    for step in dfs_solution:
+        print(step)
